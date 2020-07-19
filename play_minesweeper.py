@@ -91,9 +91,9 @@ ROWDIM = 16
 COLDIM = 30
 MINE_COUNT = 99
 # Load agent model
-ONLINE_NETWORK = load_model('model/Minesweeper_Online_83754_episodes_03-Jun-2020(16:06:30).h5')
+ONLINE_NETWORK = load_model('model/Minesweeper_Online_893658_episodes_19-Jul-2020(11:59:18).h5')
 # Replay options
-MOVE_DELAY = .1 # How much delay between player moves (seconds)
+MOVE_DELAY = 0.1 # How much delay between player moves (seconds)
 NUM_GAMES = 3 # Number of games to play
 GUI = True # Set to false to benchmark the agent rather than watch it play
 

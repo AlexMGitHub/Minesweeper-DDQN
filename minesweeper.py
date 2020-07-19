@@ -44,6 +44,7 @@ class Minesweeper:
     def step(self, action):
         # Function accepts the player's action as an input and returns the new
         # environment state, a reward, and whether the episode has terminated
+        if self.move_num == 0: self.generate_field(action)
         state = self.playerfield.flatten()
         minefield_state = self.minefield.flatten()
         state[action] = minefield_state[action]
@@ -92,21 +93,21 @@ class Minesweeper:
         self.done = False
         self.minefield = np.zeros((self.rowdim,self.coldim), dtype='int')
         self.playerfield = np.ones((self.rowdim,self.coldim), dtype='int')*9
-        self.generate_field()
         state = self.play_first_move()
         return state
 
         
-    def generate_field(self):
+    def generate_field(self, action):
         # Generates the minefield using the seeded random number generator.
         # The while loop randomly places mines in the grid, and then increments
         # the tile number of all adjacent non-mine tiles
+        idx_x, idx_y = np.unravel_index(action, (self.rowdim, self.coldim))
         num_mines = 0
         while num_mines < self.mine_count:
-            x_rand = self.np_random.randint(0,self.rowdim-1)        
-            y_rand = self.np_random.randint(0,self.coldim-1)
-            # Reserve a mine-free tile in the center for the first move
-            if (x_rand, y_rand) != (int((self.rowdim/2)-1),int((self.coldim/2)-1)):
+            x_rand = self.np_random.randint(0,self.rowdim)        
+            y_rand = self.np_random.randint(0,self.coldim)
+            # Reserve a mine-free tile for the player's first move
+            if (x_rand, y_rand) != (idx_x,idx_y):
                 if self.minefield[x_rand,y_rand] != -1:
                     self.minefield[x_rand,y_rand] = -1
                     num_mines += 1
@@ -121,9 +122,10 @@ class Minesweeper:
 
 
     def play_first_move(self):
-        # The first move is always the center tile, which is guaranteed to not
-        # contain a mine. Assign the value of this tile to the game state
-        x_coord = int((self.rowdim/2)-1)
+        # The first move is automatically played by the environment, and is 
+        # guaranteed to not contain a mine. Assign the value of this tile to 
+        # the game state
+        x_coord = int(0)
         y_coord = int((self.coldim/2)-1)
         action_idx = np.ravel_multi_index((x_coord, y_coord), (self.rowdim, self.coldim))
         state, reward, done = self.step(action_idx)
@@ -180,6 +182,7 @@ class Minesweeper:
     def init_gui(self):
         # Initialize all PyGame and GUI parameters
         pygame.init()
+        pygame.mixer.quit() # Fixes bug with high PyGame CPU usage
         self.tile_rowdim = 32 # pixels per tile along the horizontal
         self.tile_coldim = 32 # pixels per tile along the vertical
         self.game_width = self.coldim * self.tile_coldim
@@ -188,18 +191,18 @@ class Minesweeper:
         self.gameDisplay = pygame.display.set_mode((self.game_width, self.game_height+self.ui_height))
         pygame.display.set_caption('Minesweeper')
         # Load Minesweeper tileset
-        self.tilemine = pygame.image.load('img/mine.jpg')
-        self.tile0 = pygame.image.load('img/0.jpg')
-        self.tile1 = pygame.image.load('img/1.jpg')
-        self.tile2 = pygame.image.load('img/2.jpg')
-        self.tile3 = pygame.image.load('img/3.jpg')
-        self.tile4 = pygame.image.load('img/4.jpg')
-        self.tile5 = pygame.image.load('img/5.jpg')
-        self.tile6 = pygame.image.load('img/6.jpg')
-        self.tile7 = pygame.image.load('img/7.jpg')
-        self.tile8 = pygame.image.load('img/8.jpg')
-        self.tilehidden = pygame.image.load('img/hidden.jpg')
-        self.tileexplode = pygame.image.load('img/explode.jpg')
+        self.tilemine = pygame.image.load('img/mine.jpg').convert()
+        self.tile0 = pygame.image.load('img/0.jpg').convert()
+        self.tile1 = pygame.image.load('img/1.jpg').convert()
+        self.tile2 = pygame.image.load('img/2.jpg').convert()
+        self.tile3 = pygame.image.load('img/3.jpg').convert()
+        self.tile4 = pygame.image.load('img/4.jpg').convert()
+        self.tile5 = pygame.image.load('img/5.jpg').convert()
+        self.tile6 = pygame.image.load('img/6.jpg').convert()
+        self.tile7 = pygame.image.load('img/7.jpg').convert()
+        self.tile8 = pygame.image.load('img/8.jpg').convert()
+        self.tilehidden = pygame.image.load('img/hidden.jpg').convert()
+        self.tileexplode = pygame.image.load('img/explode.jpg').convert()
         self.tile_dict = {-1:self.tilemine,0:self.tile0,1:self.tile1,
                           2:self.tile2,3:self.tile3,4:self.tile4,5:self.tile5,
                           6:self.tile6,7:self.tile7,8:self.tile8,

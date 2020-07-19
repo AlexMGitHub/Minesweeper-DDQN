@@ -100,8 +100,8 @@ env.seed(1)
 
 
 # %%  Agent/Network Hyperparameters
-LR_PIECEWISE = [0.004,0.001,0.001,0.0005,0.0005,0.00025] # NN learning rates to decay piecewise 
-LR_DECAY_STEPS = [0,1e6,4e6,8e6,10e6,12e6] # Number of steps that define piecewise segments
+LR_PIECEWISE = [0.001,0.0005,0.00025,0.00025/2,0.00025/4, 0.00025/10] # NN learning rates to decay piecewise 
+LR_DECAY_STEPS = [0,1e6,3e6,6e6,10e6, 15e6] # Number of steps that define piecewise segments
 GAMMA = 0.99 # Discount factor
 EPSILON_INITIAL = 1 # Exploration rate
 EPSILON_DECAY = .99
@@ -115,7 +115,7 @@ NUM_HOLDOUT_STATES = EXPERIENCE_REPLAY_BATCH_SIZE
 PER_ALPHA = 0.6 # Exponent that determines how much prioritization is used
 PER_BETA_MIN = 0.4 # Starting value of importance sampling correction
 PER_BETA_MAX = 1.0 # Final value of beta after annealing
-PER_BETA_ANNEAL_STEPS = 10e6 # Number of steps to anneal beta over
+PER_BETA_ANNEAL_STEPS = 50e6 # Number of steps to anneal beta over
 PER_EPSILON = 0.01 # Small positive constant to prevent zero priority
 
 # Pass hyperparameters to DDQNAgent as dictionary
@@ -143,7 +143,7 @@ agent_kwargs = {
 # %% Training parameters
 trials = []
 NUMBER_OF_TRIALS=1
-MAX_TRAINING_EPISODES = 100000
+MAX_TRAINING_EPISODES = 1000000
 MAX_STEPS_PER_EPISODE = ROWDIM*COLDIM-MINE_COUNT
 SOLVE_CONDITION = 365 # Average score training will stop at if reached
 MOVING_AVE_WINDOW = 100 # Number of episodes to average over
@@ -158,8 +158,8 @@ for trial_index in range(NUMBER_OF_TRIALS):
     online_network = create_dqn(LR_PIECEWISE[0])
     target_network = create_dqn(LR_PIECEWISE[0])
     # Uncomment lines below to resume training on an existing model
-    # online_network = load_model('model/Minesweeper_Online_83754_episodes_03-Jun-2020(16:06:30).h5')  
-    # target_network = load_model('model/Minesweeper_Target_83754_episodes_03-Jun-2020(16:06:30).h5')  
+    # online_network = load_model('model/Minesweeper_Online_893658_episodes_19-Jul-2020(11:59:18).h5')  
+    # target_network = load_model('model/Minesweeper_Online_893658_episodes_19-Jul-2020(11:59:18).h5')  
     agent = DoubleDQNAgent(online_network, target_network, **agent_kwargs)
     trial_episode_scores = []
     holdout_states_q = []
